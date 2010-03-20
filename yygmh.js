@@ -2,10 +2,12 @@ var interpreter = (function(){
 	var stack = [],
 		heap = {},
 		marks = {},
-		trace = {},
-		top = 0,		// location of caller
-		o = 0,			// location
-		line = 1; 		// line number or command count
+		sub = {},
+		args = {},
+		//trace = {},
+		near = 0,
+		count = 0,
+		offset = 0;
 
 	var valid = { "草": 1, "泥": 1, "马": 1 };
 
@@ -25,12 +27,12 @@ var interpreter = (function(){
 		"泥泥草": [function(){ var v = stack.pop(); heap[stack.pop()] = v; }], 						// store
 		"泥泥泥": [function(){ stack.push(heap[stack.pop()]); }], 									// retrieve
 		// Flow Control
-		"马草草": [, function(label){ marks[label] = o; }],											// label, unsigned
-		"马草泥": [, function(label){ top = o; jump(label); }], 									// call, unsigned
-		"马草马": [, function(label){ jump(label); }], 												// jump, unsigned
-		"马泥草": [, function(label){ if (0 == stack.pop()) jump(label); }], 						// jz, unsigned
-		"马泥泥": [, function(label){ if (0 > stack.pop()) jump(label); }], 						// jn, unsigned
-		"马泥马": [function(){ o = top; line = trace[o][0]; }], 									// ret
+		"马草草": [1, function(label){ return sub[label]; }],										// label, unsigned
+		"马草泥": [, function(label){ args[sub[label]] = count; return marks[label]; }], 			// call, unsigned
+		"马草马": [, function(label){ return marks[label]; }], 										// jump, unsigned
+		"马泥草": [, function(label){ if (0 == stack.pop()) return marks[label]; }], 				// jz, unsigned
+		"马泥泥": [, function(label){ if (0 > stack.pop()) return marks[label]; }], 				// jn, unsigned
+		"马泥马": [2, function(line){ return line; }], 												// ret
 		"马马马": [function(){ throw new Error("exit"); }], 										// exit
 		// IO
 		"泥马草草": [function(){ var r = stack.pop(); put(r == 10 && '\n' || r); }], 				// outchar
@@ -38,11 +40,6 @@ var interpreter = (function(){
 		"泥马泥草": [function(){ heap[stack.pop()] = getInput(); }], 								// readchar
 		"泥马泥泥": [function(){ heap[stack.pop()] = parseInt(getInput()); }] 						// readnum
 	};
-
-	function jump(label){
-		o = marks[label];
-		line = trace[o][0]; 
-	}
 
 	function put(src){
 		var result = src;
@@ -56,42 +53,51 @@ var interpreter = (function(){
 
 	function getInput(){}
 
-	function mainloop(code, path){
+	function lexer(code, path){
 		var token,
 			cmd,
+			tree = [],
 			cache = [],
 			timer = +new Date();
 
-		while (token = code[o++]) {
+		while (token = code[offset++]) {
 			if (!valid[token])
 				continue;
 			if (!path) {
 				cache.push(token);
-				cmd = cache.join('');
-				if (!table[cmd]) {
+				cmd = table[cache.join('')];
+				if (!cmd) {
 					continue;
 				} else {
-					if (table[cmd][0]) {
-						console.info(line, cmd, table[cmd], stack.toString())
-						table[cmd][0]();
-						console.info(line, cmd, table[cmd], stack.toString())
+					if (typeof cmd[0] === "function") { 					// no argument
+						tree.push(cmd[0]);
+					} else if (2 === cmd[0]) { 								// define subroutine
+						tree.push(cmd[1]);
+						sub[args[near]] = count;
+						near = 0;
 					} else {
-						console.info(line, cmd, table[cmd], stack.toString())
-						if (table[cmd][0] === 0)
-							prefix = "泥" == code[o++] && -1 || 1; // @TODO
+						if (0 === cmd[0]) 									// signed argument
+							prefix = "泥" == code[offset++] && -1 || 1;
 						else
-							prefix = 1;
-						table[cmd][1](prefix * parseInt(arguments.callee(code, 1), 2));
-						console.info(line, cmd, table[cmd], stack.toString())
+							prefix = 1; 									// unsigned argument
+						tree.push(cmd[1]);
+						args[count] = prefix * parseInt(lexer(code, 1).join(''), 2); 
+
+						if (1 === cmd[0]) { 								// define label
+							marks[args[count]] = count; 
+							near = count; 
+						} 
 					}
 				}
+				//trace[count] = [count+1, cache.join(''), args[count], tree[count]];
+				//console.info("log 1:", trace[count])
 				cache = [];
-				trace[o] = [++line];
+				count++;
 			} else {
 				if ("草" == token)
-					cache.push(0);
+					tree.push(0);
 				else if ("泥" == token)
-					cache.push(1);
+					tree.push(1);
 				else if ("马" == token)
 					break;
 			}
@@ -99,26 +105,42 @@ var interpreter = (function(){
 				throw new Error("We must stop Grass Mud Horse because it have run too long..");
 		}
 
-		return cache.join('');
+		return tree;
+	}
+
+	// runtime
+	function call(process){
+		var timer = +new Date();
+		count = 0;
+		var l = process.length;
+		while (count < l) {
+			//console.info("log 2:", trace[count], stack.toString())
+			count = process[count](args[count]) || count;
+			count++;
+			if (+new Date - timer > 300)
+				throw new Error("We must stop Grass Mud Horse because it have run too long..");
+		}
 	}
 
 	var interpreter = {
 		eval: function(code){
 			try{
-				mainloop(code);
+				var tree = lexer(code);
+				call(tree);
+				put('[SUCCESS]');
 			} catch(ex) {
 				put('\n');
 				if ("exit" == ex)
-					put('[COMPLETED]');
+					put('[SUCCESS]');
 				else
 					put('[ERROR] ' + ex.message);
 			}	
 			stack = [];
 			heap = {};
 			marks = {};
-			top = 0;
-			o = 0;
-			line = 1;
+			near = 0;
+			count = 0;
+			offset = 0;
 		}
 	};
 
