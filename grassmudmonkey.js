@@ -51,8 +51,8 @@ var GrassMudMonkey = (function(){
 
 	function put(src){
 		var result = src;
-		if (window.console)
-			window.console.info(result);
+		//if (window.console)
+			//window.console.info(result);
 		if (interpreter.print)
 			interpreter.print(src);
 		else
@@ -67,6 +67,9 @@ var GrassMudMonkey = (function(){
 			tree = [],
 			cache = [],
 			timer = +new Date();
+
+		if (!code[0]) // for ie8-
+			code = code.split('');
 
 		while (token = code[offset++]) {
 			if (!valid[token])

@@ -49,12 +49,12 @@ var output = elm('output');
 GrassMudMonkey.print = function(str){
 	if (str === "\n")
 		str += ">>> ";
-	output.value += str;
+	output.value = output.value + str;
 };
 elm('code').value = elm('example').value;
 output.value = '>>> Welcome to GrassMudMonkey Console!';
 elm('runbtn').onclick = function(){
-	output.value += "\n>>> ";
+	output.value = output.value + "\n>>> ";
 	GrassMudMonkey.eval(elm('code').value);
 };
 elm('typebtn').onclick = function(){
