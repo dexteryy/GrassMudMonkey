@@ -13,10 +13,11 @@ var GrassMudMonkey = (function(){
 	    marks = {},
 	    sub = {},
 	    args = {},
-	    //trace = {},
+		trace = {},
 	    near = 0,
 	    count = 0,
-	    offset = 0;
+	    offset = 0,
+		timer = 0;
 
 	var valid = { "草": 1, "泥": 1, "马": 1 };
 
@@ -46,9 +47,9 @@ var GrassMudMonkey = (function(){
 		"马泥马": [2, function(line){ return line; }], 												// ret
 		"马马马": [function(){ throw new Error("exit"); }], 										// exit
 		// IO
-		"泥马草草": [function(){ var r = stack.pop(); put(r == 10 && '\n' || r); }], 				// outchar
+		"泥马草草": [function(){ put(String.fromCharCode(stack.pop())); }],							// outchar
 		"泥马草泥": [function(){ put(stack.pop()); }], 												// outnum
-		"泥马泥草": [function(){ heap[stack.pop()] = getInput(); }], 								// readchar
+		"泥马泥草": [function(){ heap[stack.pop()] = String.charCodeAt(getInput(1)); }], 			// readchar
 		"泥马泥泥": [function(){ heap[stack.pop()] = parseInt(getInput()); }] 						// readnum
 	};
 
@@ -62,17 +63,19 @@ var GrassMudMonkey = (function(){
 			alert(result);
 	}
 
-	function getInput(){
-		put('\n[WARN] Input is unsupported, default value is 1\n')
-		return 1;
+	function getInput(ischar){
+		var result = ischar && "Y" || 10;
+		put(' ' + result + '(default value)\n');
+		return result;
 	}
 
 	function lexer(code, path){
 		var token,
 			cmd,
 			tree = [],
-			cache = [],
-			timer = +new Date();
+			cache = [];
+
+		timer = +new Date();
 
 		if (!code[0]) // for ie8-
 			code = code.split('');
@@ -118,7 +121,7 @@ var GrassMudMonkey = (function(){
 				else if ("马" == token)
 					break;
 			}
-			if (+new Date - timer > 1000)
+			if (+new Date - timer > 5000)
 				throw new Error("We must stop Grass Mud Horse because it have run too long..");
 		}
 
@@ -127,14 +130,14 @@ var GrassMudMonkey = (function(){
 
 	// runtime
 	function call(process){
-		var timer = +new Date();
+		timer = +new Date();
 		count = 0;
 		var l = process.length;
 		while (count < l) {
 			//console.info("log 2:", trace[count], stack.toString())
 			count = process[count](args[count]) || count;
 			count++;
-			if (+new Date - timer > 1000)
+			if (+new Date - timer > 5000)
 				throw new Error("We must stop Grass Mud Horse because it have run too long..");
 		}
 	}
