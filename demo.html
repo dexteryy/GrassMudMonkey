@@ -1,66 +1,82 @@
 <!DOCTYPE html>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>test</title>
-<style type="text/css">
-*{margin:0;padding:0}
-body{
-	
-}
-#box{
-	margin: 30px;
-	width:770px;
-}
-#code,
-#output{
-	font-family: monospace, sans-serif;
-	font-size:12px;
-	width:750px;
-	height:300px;
-	background:#000;
-	color:#0f0;
-	padding:10px;
-	line-height:170%;
-	border:0;
-}
-#toolbar{
-	background:#ccc;
-}
-#toolbar input{
-	width:100px;
-	height:24px;
-	border:0;
-	border-right:1px solid #666;
-	background:#999;
-	color:#fff;
-	cursor:pointer;
-}
-#output{
-	color:#eee;
-	height:100px;
-}
-</style>
+<link href="console.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
 <div id="box">
-	<textarea id="code"></textarea>
+	<div class="wrap">
+		<textarea id="code"></textarea>
+		
+	</div>
 	<div id="toolbar">
 		<input type="button" id="runbtn" value="Run" />
+		<input type="button" id="exambtn" value="Example" />
+		<input type="button" id="cmtbtn" value="Example With Comments" />
+		<input type="button" id="typebtn" value="Language -> Whitespace" />
+		<input type="button" id="debugbtn" value="Debug Mode: Off" />
 	</div>
-	<textarea id="output" readonly="readonly">&gt;&gt;&gt; </textarea>
+	<div class="wrap" id="console">
+		<textarea id="output" readonly="readonly">&gt;&gt;&gt; </textarea>
+	</div>
 </div>
 
-<script type="text/javascript" src="yygmh.js"></script>
+<textarea id="example">
+1  草-草 草泥马                   数字1压栈
+2  马-草草 草泥草草草草泥泥马       在这里设置一个循环开始的标识
+3  草-马草                       复制栈顶元素	
+4  泥马-草泥                      输出当前值
+5  草草 草泥草泥草马               换行(10)压栈
+6  泥马-草草                      输出10
+7  草草 草泥马                    1压栈
+8  泥草-草草                     相加栈内两个元素
+9  草-马草                       复制栈顶以便比较
+10 草-草 草泥草泥泥马              11压栈	
+11 泥草- 草泥                    相减，如果我们已经循环到11了应该会得到一个0到栈顶
+12 马-泥草 草泥草草草泥草泥马       如果是0，跳到最后
+13 马-草马 草泥草草草草泥泥马       跳到开始
+14 马-草草 草泥草草草泥草泥马       设置一个标签标识循环结束
+15 草-马马                       清空堆栈，打扫卫生，整理整顿
+</textarea>
+
+<script type="text/javascript" src="grassmudmonkey.js"></script>
 <script type="text/javascript">
-var output = document.getElementById('output');
-interpreter.print = function(str){
+var elm = function(e){
+	return document.getElementById(e);
+};
+var output = elm('output');
+GrassMudMonkey.print = function(str){
 	if (str === "\n")
 		str += ">>> ";
 	output.value += str;
 };
-document.getElementById('runbtn').onclick = function(){
+elm('code').value = elm('example').value;
+elm('runbtn').onclick = function(){
 	output.value = ">>> ";
-	interpreter.eval(document.getElementById('code').value);
+	GrassMudMonkey.eval(elm('code').value);
+};
+elm('typebtn').onclick = function(){
+	this.value = this.value.replace(/(\->\s*)(\w+)/, function(a, b, c){
+		var old = GrassMudMonkey.type;
+		GrassMudMonkey.type = c;
+		return b + old;
+	});
+};
+elm('debugbtn').onclick = function(){
+	if (GrassMudMonkey.debugEnable) {
+		GrassMudMonkey.debugEnable = false;
+		this.value = "Debug Mode: Off";
+	} else {
+		GrassMudMonkey.debugEnable = true;
+		this.value = "Debug Mode: On";
+	}
+};
+elm('cmtbtn').onclick = function(){
+	elm('code').value = elm('example').value;
+};
+elm('exambtn').onclick = function(){
+	elm('code').value = elm('example').value.replace(/[^\u8349\u6CE5\u9A6C]/g, '');
 };
 </script>
 </body>

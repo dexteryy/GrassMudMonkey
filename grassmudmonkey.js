@@ -1,4 +1,12 @@
-var interpreter = (function(){
+/*!
+ * GrassMudMonkey - a OpenSouce GrassMudHorse/Whitespace Engine Written in JavaScript
+ * Author: Dexter.Yy (dexter.yy at gmail.com)
+ * version: 1.2
+ * Homepage: http://www.limboy.com
+ * GrassMudHorse homepage: http://code.google.com/p/grass-mud-horse/
+ * Whitespace homepage: http://compsoc.dur.ac.uk/whitespace/
+ */ 
+var GrassMudMonkey = (function(){
 	var stack = [],
 		heap = {},
 		marks = {},
@@ -123,18 +131,30 @@ var interpreter = (function(){
 	}
 
 	var interpreter = {
+		type: "GrassMudHorse",
+		debugEnable: false,
+		print: null, // interface
+		reset: null, // interface
 		eval: function(code){
 			try{
+
+				if (this.type == "Whitespace")
+					code = code.replace(/\s/g, function(char){
+						return char === " " && "草" || char === "\t" && "泥" || char === "\n" && "马";
+					});
+
 				var tree = lexer(code);
 				call(tree);
 				put('[SUCCESS]');
+
 			} catch(ex) {
 				put('\n');
-				if ("exit" == ex)
+				if ("exit" == ex.message)
 					put('[SUCCESS]');
 				else
 					put('[ERROR] ' + ex.message);
 			}	
+			// reset
 			stack = [];
 			heap = {};
 			marks = {};
