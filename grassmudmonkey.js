@@ -1,5 +1,5 @@
 /*!
- * GrassMudMonkey - a OpenSouce GrassMudHorse/Whitespace Engine Written in JavaScript
+ * GrassMudMonkey - an Open Souce GrassMudHorse/Whitespace Engine Written in JavaScript
  * Author: Dexter.Yy (dexter.yy at gmail.com)
  * version: 1.2
  * Homepage: http://www.limboy.com
