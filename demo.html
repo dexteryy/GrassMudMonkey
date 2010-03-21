@@ -54,7 +54,7 @@ GrassMudMonkey.print = function(str){
 elm('code').value = elm('example').value;
 output.value = '>>> Welcome to GrassMudMonkey Console!';
 elm('runbtn').onclick = function(){
-	output.value = output.value + "\n>>> ";
+	output.value = ">>> Welcome to GrassMudMonkey Console!\n>>> ";
 	GrassMudMonkey.eval(elm('code').value);
 };
 elm('typebtn').onclick = function(){

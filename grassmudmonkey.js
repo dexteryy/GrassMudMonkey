@@ -23,8 +23,10 @@ var GrassMudMonkey = (function(){
 		// Stack Manipulation
 		"草草": [0, function(num){ stack.push(num); }], 											// push, signed
 		"草马草": [function(){ stack.push(stack[stack.length-1]); }], 								// dup,
+		"草泥草": [0, function(n){ stack.push(stack[n - 1]); }], 									// copy, signed
 		"草马泥": [function(){ stack.splice(-1, 0, stack.pop()); }], 								// swap
 		"草马马": [function(){ stack.pop(); }],														// discard
+		"草泥马": [0, function(n){ stack.splice(0 - 1 - n, n); }],									// slide, signed
 		// Arithmetic
 		"泥草草草": [function(){ stack.push(stack.pop() + stack.pop()); }], 						// add 
 		"泥草草泥": [function(){ stack.push(stack.pop() - stack.pop()); }], 						// sub
