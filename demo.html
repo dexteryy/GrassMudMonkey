@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>test</title>
+<title>GrassMudMonkey Console</title>
 <link href="console.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -15,7 +15,7 @@
 		<input type="button" id="exambtn" value="Example" />
 		<input type="button" id="cmtbtn" value="Example With Comments" />
 		<input type="button" id="typebtn" value="Language -> Whitespace" />
-		<input type="button" id="debugbtn" value="Debug Mode: Off" />
+		<!--<input type="button" id="debugbtn" value="Debug Mode: Off" />-->
 	</div>
 	<div class="wrap" id="console">
 		<textarea id="output" readonly="readonly"></textarea>
@@ -33,7 +33,7 @@
 8   泥草-草草                     //相加栈内两个元素
 9   草-马草                       //复制栈顶以便比较
 10  草-草 草泥草泥泥马            //11压栈	
-11  泥草- 草泥                    //相减，如果我们已经循环到11了应该会得到一个0到栈顶
+11  泥草- 草泥                    //相减
 12  马-泥草 草泥草草草泥草泥马    //如果是0，跳到最后
 13  马-草马 草泥草草草草泥泥马    //跳到开始
 14  马-草草 草泥草草草泥草泥马    //设置一个标签标识循环结束
@@ -64,6 +64,7 @@ elm('typebtn').onclick = function(){
 		return b + old;
 	});
 };
+/*
 elm('debugbtn').onclick = function(){
 	if (GrassMudMonkey.debugEnable) {
 		GrassMudMonkey.debugEnable = false;
@@ -73,6 +74,7 @@ elm('debugbtn').onclick = function(){
 		this.value = "Debug Mode: On";
 	}
 };
+*/
 elm('cmtbtn').onclick = function(){
 	elm('code').value = elm('example').value;
 };

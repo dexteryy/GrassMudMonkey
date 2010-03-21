@@ -1,21 +1,22 @@
 /*!
  * GrassMudMonkey - an Open Souce GrassMudHorse/Whitespace Engine Written in JavaScript
- * Author: Dexter.Yy (dexter.yy at gmail.com)
- * version: 1.2
- * Homepage: http://www.limboy.com
+ * @author: Dexter.Yy (dexter.yy at gmail.com)
+ * @version: 1.2
+ * @licence GPLv3(http://www.gnu.org/licenses/gpl.html)
+ * @homepage: http://www.limboy.com
  * GrassMudHorse homepage: http://code.google.com/p/grass-mud-horse/
  * Whitespace homepage: http://compsoc.dur.ac.uk/whitespace/
  */ 
 var GrassMudMonkey = (function(){
 	var stack = [],
-		heap = {},
-		marks = {},
-		sub = {},
-		args = {},
-		//trace = {},
-		near = 0,
-		count = 0,
-		offset = 0;
+	    heap = {},
+	    marks = {},
+	    sub = {},
+	    args = {},
+	    //trace = {},
+	    near = 0,
+	    count = 0,
+	    offset = 0;
 
 	var valid = { "草": 1, "泥": 1, "马": 1 };
 
@@ -130,7 +131,7 @@ var GrassMudMonkey = (function(){
 			//console.info("log 2:", trace[count], stack.toString())
 			count = process[count](args[count]) || count;
 			count++;
-			if (+new Date - timer > 300)
+			if (+new Date - timer > 1000)
 				throw new Error("We must stop Grass Mud Horse because it have run too long..");
 		}
 	}
