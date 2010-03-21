@@ -62,7 +62,10 @@ var GrassMudMonkey = (function(){
 			alert(result);
 	}
 
-	function getInput(){}
+	function getInput(){
+		put('\n[WARN] Input is unsupported, default value is 1\n')
+		return 1;
+	}
 
 	function lexer(code, path){
 		var token,
@@ -146,7 +149,7 @@ var GrassMudMonkey = (function(){
 
 				if (this.type == "Whitespace")
 					code = code.replace(/\s/g, function(char){
-						return char === " " && "草" || char === "\t" && "泥" || char === "\n" && "马";
+						return char === " " && "草" || char === "\t" && "泥" || char === "\n" && "马" || char;
 					});
 
 				var tree = lexer(code);
